@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "vitanovaAPI",
+    'rest_framework',
+      "rest_framework_simplejwt",
+    "corsheaders",
+
 ]
 
 MIDDLEWARE = [
@@ -122,3 +126,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#CORS ALLOWING PERMISSON ACCESS
+CORS_ALLOW_ALL_ORIGINS = True
+AUTH_USER_MODEL = 'vitanovaAPI.CustomUser'
