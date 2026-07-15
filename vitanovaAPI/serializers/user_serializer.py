@@ -7,9 +7,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['user_id', 'date_joined', 'updated_at']
         extra_kwargs = {
             'password': {'write_only': True}
+<<<<<<< HEAD
         }
 
 
@@ -40,3 +41,17 @@ class LoginSerializer(TokenObtainPairSerializer):
         }
 
         return data
+=======
+        } 
+
+def create(self, validated_data):
+    password = validated_data.pop("password")
+
+    user = User(**validated_data)
+
+    user.set_password(password)
+
+    user.save() 
+
+    return user 
+>>>>>>> 18793dc (Add serializers for user, donor, patient, and location models)
