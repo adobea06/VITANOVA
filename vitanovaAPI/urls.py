@@ -2,8 +2,12 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import user_views
 from  rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .views.donor_views import DonorProfileCreateView
+from .views.patient_views import PatientProfileCreateView
 urlpatterns = [
     path('register/', user_views.RegisterUserView.as_view(), name='register'),
    path('login/', user_views.LoginView.as_view(), name='login'),
    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+   path("profile/donor/", DonorProfileCreateView.as_view()),
+   path("profile/patient/", PatientProfileCreateView.as_view()),
 ]

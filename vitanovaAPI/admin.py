@@ -8,3 +8,6 @@ from .models.location_models import Location
 # Register your models here.
 admin.site.register(User)
 admin.site.register(Role)
+admin.site.register(Donor)
+admin.site.register(Patient)
+admin.site.register(Location)   

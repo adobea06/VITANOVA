@@ -1,31 +1,28 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsDonor
-from ..models import Donor
-from ..serializers.profile_serializers import DonorProfileSerializer
+from rest_framework.permissions import IsAuthenticated  
+from ..serializers.profile_serializers import PatientProfileSerializer
+from ..permissions import IsPatient
 
 
+class PatientProfileCreateView(APIView):
 
-class DonorProfileCreateView(APIView):
-
-    permission_classes = [IsAuthenticated, IsDonor]
+    permission_classes = [IsAuthenticated, IsPatient]
 
 
     def post(self, request):
 
-        # Check if profile already exists
-        if hasattr(request.user, "donor"):
+        if hasattr(request.user, "patient"):
             return Response(
                 {
-                    "message": "Donor profile already exists"
+                    "message": "Patient profile already exists"
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
 
-        serializer = DonorProfileSerializer(
+        serializer = PatientProfileSerializer(
             data=request.data
         )
 
@@ -36,9 +33,10 @@ class DonorProfileCreateView(APIView):
                 user=request.user
             )
 
+
             return Response(
                 {
-                    "message": "Donor profile created successfully",
+                    "message": "Patient profile created successfully",
                     "profile": serializer.data
                 },
                 status=status.HTTP_201_CREATED
