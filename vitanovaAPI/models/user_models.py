@@ -7,7 +7,24 @@ from django.contrib.auth.models import (
 
 
 
-#user manager 
+#user role model
+class Role(models.Model):
+    role_id = models.AutoField(primary_key=True)
+
+    role_name = models.CharField(
+        max_length=30,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.role_name
+
+
+
+
+
+#user manager
+
 class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
@@ -26,20 +43,27 @@ class UserManager(BaseUserManager):
 
         return user
 
+
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_verified", True)
         extra_fields.setdefault("is_active", True)
 
-        if extra_fields.get("is_staff") is not True:
-            raise ValueError("Superuser must have is_staff=True.")
+        admin_role, created = Role.objects.get_or_create(
+            role_name="Admin"
+        )
 
-        if extra_fields.get("is_superuser") is not True:
-            raise ValueError("Superuser must have is_superuser=True.")
+        extra_fields["role"] = admin_role
 
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(
+            email,
+            password,
+            **extra_fields
+        )
 
+
+#user model
 class User(AbstractBaseUser, PermissionsMixin):
     user_id = models.AutoField(primary_key=True)
 
@@ -75,16 +99,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
+    
 
 
-#user role model
-class Role(models.Model):
-    role_id = models.AutoField(primary_key=True)
-
-    role_name = models.CharField(
-        max_length=30,
-        unique=True
-    )
-
-    def __str__(self):
-        return self.role_name
+ 
