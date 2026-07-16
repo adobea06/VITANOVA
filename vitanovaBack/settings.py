@@ -131,3 +131,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #CORS ALLOWING PERMISSON ACCESS
 CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = "vitanovaAPI.User"
+
+#use authentication
+
+SIMPLE_JWT = {
+    "USER_ID_FIELD": "user_id",
+    "USER_ID_CLAIM": "user_id",
+}

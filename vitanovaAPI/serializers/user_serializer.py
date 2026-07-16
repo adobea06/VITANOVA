@@ -1,7 +1,7 @@
 from ..models.user_models import User
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from django.contrib.auth import authenticate
 # register serializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,30 +35,46 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-
-
 class LoginSerializer(TokenObtainPairSerializer):
 
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
+    login = serializers.CharField(write_only=True)
 
-        # Optional: add custom claims to the JWT itself
-        token["email"] = user.email
-        token["role"] = user.role.name
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        return token
+        # Remove the default JWT email field
+        self.fields.pop("email", None)
 
     def validate(self, attrs):
+
+        login = attrs.pop("login")
+
+        if "@" in login:
+            email = login
+
+        else:
+            try:
+                user = User.objects.get(
+                    phone_number=login
+                )
+                email = user.email
+
+            except User.DoesNotExist:
+                raise serializers.ValidationError(
+                    "Invalid phone number or password."
+                )
+
+        attrs["email"] = email
+
         data = super().validate(attrs)
 
         data["user"] = {
-            "id": self.user.id,
-            "email": self.user.email,
+            "user_id": self.user.user_id,
             "first_name": self.user.first_name,
             "last_name": self.user.last_name,
-            "role": self.user.role.name,
+            "email": self.user.email,
+            "phone_number": self.user.phone_number,
+            "role": self.user.role.role_name,
         }
 
         return data
- 
