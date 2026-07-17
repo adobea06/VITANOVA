@@ -1,51 +1,28 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
+
 from ..permissions import IsDonor
-from ..models import Donor
-from ..serializers.profile_serializers import DonorProfileSerializer
+from ..serializers.profile_serializers import DonorProfileSerializer, DonorProfileCreateSerializer
 
 
-
-class DonorProfileCreateView(APIView):
-
+class DonorProfileCreateView(generics.CreateAPIView):
+    serializer_class = DonorProfileCreateSerializer
     permission_classes = [IsAuthenticated, IsDonor]
 
-
-    def post(self, request):
-
-        # Check if profile already exists
-        if hasattr(request.user, "donor"):
-            return Response(
-                {
-                    "message": "Donor profile already exists"
-                },
-                status=status.HTTP_400_BAD_REQUEST
+    def perform_create(self, serializer):
+        if hasattr(self.request.user, "donor"):
+            raise ValidationError(
+                {"message": "Donor profile already exists"}
             )
 
-
-        serializer = DonorProfileSerializer(
-            data=request.data
-        )
+        serializer.save()
 
 
-        if serializer.is_valid():
+class DonorProfileView(generics.RetrieveUpdateAPIView):
 
-            serializer.save(
-                user=request.user
-            )
+    serializer_class = DonorProfileSerializer
+    permission_classes = [IsAuthenticated, IsDonor]
 
-            return Response(
-                {
-                    "message": "Donor profile created successfully",
-                    "profile": serializer.data
-                },
-                status=status.HTTP_201_CREATED
-            )
-
-
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    def get_object(self):
+        return self.request.user.donor

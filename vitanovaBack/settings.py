@@ -132,12 +132,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = "vitanovaAPI.User"
 
-#use authentication
-
-SIMPLE_JWT = {
-    "USER_ID_FIELD": "user_id",
-    "USER_ID_CLAIM": "user_id",
-}
 
 
 #permission jwt
@@ -149,4 +143,14 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+}
+
+#acces token time and jwt configuration
+from datetime import timedelta
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+
+    "USER_ID_FIELD": "user_id",
+    "USER_ID_CLAIM": "user_id",
 }
