@@ -3,6 +3,10 @@ from rest_framework.routers import DefaultRouter
 from .views import user_views
 from  rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views.donor_views import DonorProfileCreateView, DonorProfileView
+from .views.verification_views import VerifyEmailView
+
+
+
 #from .views.patient_views import PatientProfileCreateView
 urlpatterns = [
     path('register/', user_views.RegisterUserView.as_view(), name='register'),
@@ -10,5 +14,6 @@ urlpatterns = [
    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
    path("profile/donor/", DonorProfileCreateView.as_view()),
    path("profile/donor/me/", DonorProfileView.as_view()),
+   path("auth/verify-email/<int:user_id>/<str:token>/", VerifyEmailView.as_view()),
    # path("profile/patient/", PatientProfileCreateView.as_view()),
 ]

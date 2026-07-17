@@ -2,7 +2,7 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from ..serializers import UserSerializer, LoginSerializer
 from  rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
+from utils.send_email import send_verification_email
 class RegisterUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
@@ -12,6 +12,8 @@ class RegisterUserView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
+        send_verification_email(user)
 
         return Response(
             {

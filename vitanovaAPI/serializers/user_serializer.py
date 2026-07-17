@@ -2,6 +2,8 @@ from ..models.user_models import User
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
+
 # register serializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+
 class LoginSerializer(TokenObtainPairSerializer):
 
     login = serializers.CharField(write_only=True)
@@ -42,8 +45,8 @@ class LoginSerializer(TokenObtainPairSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Remove the default JWT email field
         self.fields.pop("email", None)
+
 
     def validate(self, attrs):
 
@@ -66,7 +69,17 @@ class LoginSerializer(TokenObtainPairSerializer):
 
         attrs["email"] = email
 
+
+        # Authenticate user first
         data = super().validate(attrs)
+
+
+        # Now self.user exists
+        if not self.user.is_verified:
+            raise AuthenticationFailed(
+                "Please verify your email first"
+            )
+
 
         data["user"] = {
             "user_id": self.user.user_id,
