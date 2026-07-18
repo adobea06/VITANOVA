@@ -3,7 +3,9 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 # register serializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
+
 class LoginSerializer(TokenObtainPairSerializer):
 
     login = serializers.CharField(write_only=True)
@@ -45,6 +48,7 @@ class LoginSerializer(TokenObtainPairSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # Remove default email field from JWT serializer
         self.fields.pop("email", None)
 
 
@@ -52,9 +56,11 @@ class LoginSerializer(TokenObtainPairSerializer):
 
         login = attrs.pop("login")
 
+        # Login with email
         if "@" in login:
             email = login
 
+        # Login with phone number
         else:
             try:
                 user = User.objects.get(
@@ -63,24 +69,37 @@ class LoginSerializer(TokenObtainPairSerializer):
                 email = user.email
 
             except User.DoesNotExist:
-                raise serializers.ValidationError(
+                raise AuthenticationFailed(
                     "Invalid phone number or password."
                 )
 
-        attrs["email"] = email
 
+        # Check if user exists
+        try:
+            user = User.objects.get(email=email)
 
-        # Authenticate user first
-        data = super().validate(attrs)
-
-
-        # Now self.user exists
-        if not self.user.is_verified:
+        except User.DoesNotExist:
             raise AuthenticationFailed(
-                "Please verify your email first"
+                "Invalid email or password."
             )
 
 
+        # Check email verification BEFORE JWT authentication
+        if not user.is_verified:
+            raise AuthenticationFailed(
+                "Please verify your email before logging in."
+            )
+
+
+        # Pass email to SimpleJWT
+        attrs["email"] = email
+
+
+        # Generate JWT tokens
+        data = super().validate(attrs)
+
+
+        # Add user information to response
         data["user"] = {
             "user_id": self.user.user_id,
             "first_name": self.user.first_name,

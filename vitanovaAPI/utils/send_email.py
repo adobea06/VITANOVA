@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
+from  decouple import config
 
 
 def send_verification_email(user):
@@ -8,7 +9,7 @@ def send_verification_email(user):
     token = default_token_generator.make_token(user)
 
     link = (
-        f"http://localhost:3000/verify-email/"
+        f"{config('verif_endpoint')}"
         f"{user.user_id}/{token}"
     )
 
