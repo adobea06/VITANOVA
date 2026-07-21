@@ -30,16 +30,22 @@ export default function RegisterPage() {
 
 
 //formik onsubmit handler
-const handleSubmit = async (values: RegisterFormValues) => {
-  const { confirmPassword, agreeTerms, ...payload } = values;
+const handleSubmit = async (values:RegisterFormValues)=>{
+
+  const {confirmPassword, agreeTerms, ...payload}=values;
 
   try {
+
     const response = await authService.register(payload);
 
-    console.log(response);
-  } catch (error) {
-    console.error(error);
+    console.log("Success:", response);
+
+  } catch(error:any){
+
+    console.log("Backend error:", error.response.data);
+
   }
+
 };
 
   return (
