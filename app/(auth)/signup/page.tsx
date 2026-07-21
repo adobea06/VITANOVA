@@ -1,29 +1,46 @@
 "use client";
 
-import React, { useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "../../context/LanguageContext";
+import FormikForm from "../../components/form/FormikForm";
+import FormInput from "../../components/form/FormInput";
+import FormCheckbox from "../../components/form/FormCheckbox";
+import FormSelect from "../../components/form/FormSelect";
+import {roles} from  "../../components/form/Constants"
+import { registerInitialValues } from "../../components/form/auth";
+import { registerSchema } from "../../../schemas/RegisterSchema";
+import { RegisterFormValues } from "../../../types/formTypes";
+import authService from "../../../services/authService";
+
+
+
+
 
 export default function RegisterPage() {
   const { t } = useLanguage();
-  const [formData, setFormData] = useState({
-    name: "John Doe",
-    email: "you@example.com",
-    bloodType: "",
-    location: "City, State",
-    password: "",
-    confirmPassword: "",
-    agreeTerms: false,
-  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    alert(`Signing up...\nName: ${formData.name}\nEmail: ${formData.email}\nBlood Type: ${formData.bloodType}\nLocation: ${formData.location}`);
-  };
+
+
+
+
+
+
+
+
+
+
+//formik onsubmit handler
+const handleSubmit = async (values: RegisterFormValues) => {
+  const { confirmPassword, agreeTerms, ...payload } = values;
+
+  try {
+    const response = await authService.register(payload);
+
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <div className="bg-gray-50/50 min-h-screen flex flex-col justify-between">
@@ -52,151 +69,40 @@ export default function RegisterPage() {
             <p className="text-sm text-gray-400">{t("signup.cardSubtitle")}</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
-            {/* Full Name */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-900">{t("signup.labelName")}</label>
-              <div className="relative flex items-center">
-                <svg className="absolute left-4 text-gray-300 pointer-events-none" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  placeholder="John Doe"
-                  className="w-full bg-gray-50 border border-gray-100 rounded-lg py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition-all duration-200 focus:border-primary focus:bg-white focus:ring-4 focus:ring-red-600/5"
-                />
-              </div>
-            </div>
 
-            {/* Email */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-900">{t("signup.labelEmail")}</label>
-              <div className="relative flex items-center">
-                <svg className="absolute left-4 text-gray-300 pointer-events-none" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                  placeholder="you@example.com"
-                  className="w-full bg-gray-50 border border-gray-100 rounded-lg py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition-all duration-200 focus:border-primary focus:bg-white focus:ring-4 focus:ring-red-600/5"
-                />
-              </div>
-            </div>
 
-            {/* Blood Type & Location Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-900">{t("signup.labelBloodType")}</label>
-                <div className="relative flex items-center">
-                  <svg className="absolute left-4 text-gray-300 pointer-events-none" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 0 0 7 7z" />
-                  </svg>
-                  <select
-                    value={formData.bloodType}
-                    onChange={(e) => setFormData({ ...formData, bloodType: e.target.value })}
-                    required
-                    className="w-full bg-gray-50 border border-gray-100 rounded-lg py-3 pl-12 pr-10 text-sm text-gray-900 outline-none cursor-pointer appearance-none bg-no-repeat bg-[right_16px_center] bg-[length:14px] [background-image:url('data:image/svg+xml,%3Csvg_xmlns=%22http://www.w3.org/2000/svg%22_fill=%22none%22_viewBox=%220_0_24_24%22_stroke=%22currentColor%22_stroke-width=%222.5%22%3E%3Cpath_stroke-linecap=%22round%22_stroke-linejoin=%22round%22_d=%22M19_9l-7_7-7-7%22/%3E%3C/svg%3E')] focus:border-primary focus:bg-white"
-                  >
-                    <option value="">{t("signup.placeholderBloodType")}</option>
-                    <option value="O-">Type O-</option>
-                    <option value="O+">Type O+</option>
-                    <option value="A-">Type A-</option>
-                    <option value="A+">Type A+</option>
-                    <option value="B-">Type B-</option>
-                    <option value="B+">Type B+</option>
-                    <option value="AB-">Type AB-</option>
-                    <option value="AB+">Type AB+</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-900">{t("signup.labelLocation")}</label>
-                <div className="relative flex items-center">
-                  <svg className="absolute left-4 text-gray-300 pointer-events-none" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                  <input
-                    type="text"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    required
-                    placeholder="City, State"
-                    className="w-full bg-gray-50 border border-gray-100 rounded-lg py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition-all duration-200 focus:border-primary focus:bg-white focus:ring-4 focus:ring-red-600/5"
-                  />
-                </div>
-              </div>
-            </div>
 
-            {/* Password & Confirm Password Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-900">{t("signup.labelPassword")}</label>
-                <div className="relative flex items-center">
-                  <svg className="absolute left-4 text-gray-300 pointer-events-none" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
-                  <input
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
-                    placeholder="••••••••"
-                    className="w-full bg-gray-50 border border-gray-100 rounded-lg py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition-all duration-200 focus:border-primary focus:bg-white focus:ring-4 focus:ring-red-600/5"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-900">{t("signup.labelConfirmPassword")}</label>
-                <div className="relative flex items-center">
-                  <svg className="absolute left-4 text-gray-300 pointer-events-none" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
-                  <input
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    required
-                    placeholder="••••••••"
-                    className="w-full bg-gray-50 border border-gray-100 rounded-lg py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition-all duration-200 focus:border-primary focus:bg-white focus:ring-4 focus:ring-red-600/5"
-                  />
-                </div>
-              </div>
-            </div>
 
-            {/* Terms Agreement Checkbox */}
-            <div className="flex items-start gap-3 mt-2 mb-1">
-              <input
-                type="checkbox"
-                id="terms"
-                checked={formData.agreeTerms}
-                onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
-                required
-                className="w-4 h-4 rounded border-gray-200 text-primary focus:ring-primary cursor-pointer mt-1 flex-shrink-0"
-              />
-              <label htmlFor="terms" className="text-[11px] md:text-xs leading-relaxed text-gray-500 cursor-pointer select-none">
-                {t("signup.labelTerms")}
-              </label>
-            </div>
 
-            {/* Sign Up Button */}
-            <button
-              type="submit"
-              className="bg-primary hover:bg-red-700 text-white py-3.5 rounded-lg font-bold text-sm transition-all duration-200 shadow-md shadow-red-100 hover:shadow-lg hover:-translate-y-0.5"
-            >
-              {t("signup.btnSignUp")}
-            </button>
-          </form>
+{/**Registration form with formik and yup validation */}
+     
+<FormikForm
+  initialValues={registerInitialValues}
+  validationSchema={registerSchema}
+  onSubmit={handleSubmit}
+>
+  <FormInput name="first_name" label={t("first name")} placeholder={t("Enter your first name")} />
+  <FormInput name="last_name" label={t("last name")} placeholder={t("Enter your last name")} />
+  <FormInput name="email" label={t("email")} placeholder={t("Enter your email")} type="email" />
+  <FormInput name="phone_number" label={t("phone number")} placeholder={t("Enter your phone number")} type="tel" />
+ <FormSelect
+    name="role"
+    label={t("role")}
+    options={roles.map((role) => ({ value: role.value, label: t(role.label) }))}
+    placeholder={t("Select your role")}
+  />
+  <FormInput name="password" label={t("password")} placeholder={t("Enter your password")} type="password" />
+  <FormInput name="confirmPassword" label={t("confirm password")} placeholder={t("Confirm your password")} type="password" />
+  <FormCheckbox name="agreeTerms" label={t("agree terms")}  disabled={false} />
+  <button type="submit" className="w-full bg-primary text-white py-3 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors duration-200 mt-4">
+    {t("Sign Up")}
+  </button>
+</FormikForm>
+
+
+
+
+          
 
           {/* Login Switch Link */}
           <div className="text-center text-sm font-semibold text-gray-400 mt-6 pt-4 border-t border-gray-50 mb-6">
