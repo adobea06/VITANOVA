@@ -9,13 +9,24 @@ import FormInput from "../../components/form/FormInput";
 import FormCheckbox from "../../components/form/FormCheckbox";
 import { loginInitialValues } from "../../components/form/auth";
 import { loginSchema } from "../../../schemas/loginSchema";
+import  authService  from "../../../services/authService";
+
+
+
+
 export default function LoginPage() {
 
-  const [rememberMe, setRememberMe] = useState(false);
   const { t } = useLanguage();
 
-  const handleSubmit = (values: any) => {
-    console.log("Form values:", values);
+  const handleSubmit = async (values: any) => {
+
+    const {agreeTerms, ...payload}=values;
+    try {
+      const response = await authService.login(payload);
+      console.log("Login successful:", response);
+    } catch (error: any) {
+      console.error("Login failed:", error.response.data);
+    }
   };
 
   return (
