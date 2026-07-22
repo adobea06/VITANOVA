@@ -15,8 +15,8 @@ VITANOVA is a centralized web platform designed to streamline and coordinate blo
 
 ---
 
-  Tech Stack
-
+  Tech Stack & System Thinking
+ **Product and System Design:**[Miro]|Used for workflow mapping,UI wireframing and system thinking.|
  **Frontend**
 - **Framework:** [React](https://reactjs.org/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
@@ -31,7 +31,8 @@ VITANOVA is a centralized web platform designed to streamline and coordinate blo
 - **NoSQL DB (MongoDB):** Flexible, high-write data (audit logs, chat/notifications, real-time activity streams).
 
  **Version Control & Repository**
-- **Monorepo Structure** hosted on GitHub.
+- **Monorepo Structure** hosted on GitHub. 
+ |**Hardware Dependencies**|None|Purely web-based platform for maximum accessibility across devices.|
 
 ---
 
