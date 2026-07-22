@@ -11,7 +11,7 @@ VITANOVA is a centralized web platform designed to streamline and coordinate blo
 - **Real-Time Blood Requests & Matching:** Urgent request broadcasts with location-aware donor matching.
 - **Hospital & Blood Bank Inventory:** Track blood unit availability, expiration dates, and rare blood group inventory.
 - **Analytics & High-Volume Event Logging:** Track system activities, user notifications, and donor interaction history.
-- **Responsive Dashboard:** Modern, intuitive user interfaces built for mobile and desktop screens.
+- **Responsive Dashboard:** Modern, intuitive user interfaces built for mobile and desktop screens. 
 
 ---
 
